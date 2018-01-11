@@ -64,14 +64,14 @@ namespace {
 // ------------------------------------------------------------------
 void
 config_explorer::
-print_help()
+usage( std::ostream& outstream ) const
 {
-  std::cout << "This program assists in debugging config loading problems. It loads a \n"
+  outstream << "This program assists in debugging config loading problems. It loads a \n"
             << "configuration and displays the contents or displays the search path.\n"
             << "Additional paths can be specified in \"KWIVER_CONFIG_PATH\" environment variable\n"
             << "or on the command line with the -I or --path options.\n"
             << "\n"
-            << "Usage: " << opt_app_name << " <config-file-name> <options>\n"
+            << "Usage: " << applet_name() << " <config-file-name> <options>\n"
             << "\n"
             << "Options are:\n"
             << "  -h / --help      displays usage information\n"
@@ -119,7 +119,7 @@ config_explorer()
 // ----------------------------------------------------------------------------
 int
 config_explorer::
-run( int argc, char* argv[] )
+run( int argc, const char* argv[] )
 {
   opt_app_name = applet_name();
 
@@ -153,7 +153,7 @@ run( int argc, char* argv[] )
 
   if ( opt_help )
   {
-    print_help();
+    usage( std::cout );
     return EXIT_SUCCESS;
   }
 
@@ -253,6 +253,7 @@ register_factories( kwiver::vital::plugin_loader& vpm )
   auto fact = vpm.ADD_APPLET( config_explorer );
   fact->add_attribute( kwiver::vital::plugin_factory::PLUGIN_NAME, "config_explorer" )
     .add_attribute( kwiver::vital::plugin_factory::PLUGIN_MODULE_NAME, module_name )
+    .add_attribute( kwiver::vital::plugin_factory::PLUGIN_CATEGORY, "applet" )
     .add_attribute( kwiver::vital::plugin_factory::PLUGIN_DESCRIPTION,
                     "Explore configuration loading process.\n\n"
                     "This program assists in debugging config loading problems. It loads a "

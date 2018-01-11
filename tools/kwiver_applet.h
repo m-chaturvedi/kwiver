@@ -52,7 +52,8 @@ public:
 
   void initialize( kwiver::tools::applet_context* ctxt);
 
-  virtual int run( int argc, char* argv[] ) = 0;
+  virtual int run( int argc, const char* argv[] ) = 0;
+  virtual void usage( std::ostream& outstream ) const = 0;
 
 protected:
 

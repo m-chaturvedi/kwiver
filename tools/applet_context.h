@@ -33,10 +33,12 @@
 
 #include <vital/util/wrap_text_block.h>
 
+#include <memory>
 #include <ostream>
 
 namespace kwiver {
 namespace tools {
+
 // ----------------------------------------------------------------
 /**
  * @brief Applet context provided by the tool runner.
@@ -47,7 +49,7 @@ class applet_context
 public:
 
   // current output stream set by tool runner
-  std::ostream* m_ostream;
+  std::shared_ptr<std::ostream> m_ostream;
 
   // Used to wrap large text blocks
   kwiver::vital::wrap_text_block m_wtb;

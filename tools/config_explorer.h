@@ -45,12 +45,12 @@ class config_explorer
 public:
   config_explorer();
 
-  virtual int run( int argc, char* argv[] );
+  virtual int run( int argc, const char* argv[] );
+  virtual void usage( std::ostream& outstream ) const;
 
 protected:
 
 private:
-  void print_help();
 
 }; // end of class
 

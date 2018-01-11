@@ -56,7 +56,12 @@ std::ostream&
 kwiver_applet::
 outstream() const
 {
-  return *m_context->m_ostream;
+  if ( m_context && m_context->m_ostream )
+  {
+    return *m_context->m_ostream;
+  }
+
+  throw std::runtime_error( "Invalid context or outstream" );
 }
 
 
@@ -65,7 +70,13 @@ const std::string&
 kwiver_applet::
 applet_name() const
 {
-  return m_context->m_applet_name;
+  if ( m_context )
+  {
+    return m_context->m_applet_name;
+  }
+
+  throw std::runtime_error( "Invalid context pointer" );
+
 }
 
 } } // end namespace kwiver

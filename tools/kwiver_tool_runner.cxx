@@ -120,22 +120,13 @@ public:
 
 
 // ----------------------------------------------------------------------------
-void
-std_stream_dtor(void* /*ptr*/)
-{
-  // We don't want to delete std::cin or std::cout.
-}
-
-
-// ----------------------------------------------------------------------------
 void tool_runner_usage( applet_context_t ctxt,
                         kwiver::vital::plugin_manager& vpm )
 {
   // display help message
   std::cout << "Usage: kwiver  <applet>  [args]" << std::endl
             << "<applet> can be one of the following:" << std::endl
-            << "help - prints this message" << std::endl
-    ;
+            << "help - prints this message" << std::endl;
 
   // Get list of factories for implementations of the applet
   const auto fact_list = vpm.get_factories( typeid( kwiver::tools::kwiver_applet ).name() );

@@ -83,6 +83,17 @@ public:
   void load_pipeline(std::istream& istr, std::string const& def_file = "" );
 
   /**
+   * \brief Load pipeline configuration from file name.
+   *
+   * This method loads the pipeline configuration into the
+   * builder. This can be used to add additional configuration files
+   * to the internal pipeline representation.
+   *
+   * \param def_file The name of the pipeline file to use.
+   */
+  void load_pipeline(std::string const& def_file );
+
+  /**
    * \brief Load supplemental data into pipeline description.
    *
    * Adds supplemental block to the internal representation of the pipeline.
@@ -100,6 +111,20 @@ public:
    * \param setting String containing a single config setting entry.
    */
   void add_setting(std::string const& setting);
+
+  //@{
+  /**
+   * \brief Add directory to search path.
+   *
+   * This method adds a directory to the end of the config file search
+   * path. This search path is used to locate all referenced included
+   * files only.
+   *
+   * @param file_path Directory or list to add to end of search path.
+   */
+  void add_search_path( kwiver::vital::config_path_t const& file_path );
+  void add_search_path( kwiver::vital::config_path_list_t const& file_path );
+  //@}
 
   /**
    * \brief Create pipeline from internal representation.
@@ -129,7 +154,13 @@ public:
   sprokit::pipe_blocks blocks() const;
 
 private:
+  kwiver::vital::logger_handle_t m_logger;
+
+  // List of pipe blocks
   sprokit::pipe_blocks m_blocks;
+
+  // file search path list
+  kwiver::vital::config_path_list_t m_search_path;
 };
 
 }

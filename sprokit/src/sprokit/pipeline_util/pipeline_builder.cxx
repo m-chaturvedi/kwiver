@@ -45,20 +45,37 @@
 #include <string>
 #include <vector>
 
-namespace sprokit
-{
+namespace sprokit {
 
-namespace
-{
+namespace {
 
 static std::string const split_str = "=";
 
 }
 
+//@todo Need to get our search path to the parser.
+//
+// Need to do a flow analysis to optimize the code flow. This is a
+// tangled web.
+//
+// +1) Could absorb load_pipe.cxx functions as methods on the
+// builder. Replace/merge load_pipeline_... methods with
+// load_pipe_blocks_... since the former do not provide any
+// value.
+// - Have to handle cluster processing.
+// - Load_... functions are used extensively in tests.
+// - There are python bindings too.
+//
+// 2) Make a new class for pipeline_loader since loading is slightly
+// different from building. The search paths could be set into that
+// object before loading.
+//
+
 // ==================================================================
 pipeline_builder
 ::pipeline_builder()
-  : m_blocks()
+  : m_logger( kwiver::vital::get_logger( "sprokit.pipeline_builder" ) )
+  , m_blocks()
 {
 }
 
@@ -68,7 +85,18 @@ void
 pipeline_builder
 ::load_pipeline(std::istream& istr, std::string const& def_file )
 {
+  //+ Needs new search path
   m_blocks = sprokit::load_pipe_blocks(istr, def_file);
+}
+
+
+// ------------------------------------------------------------------
+void
+pipeline_builder
+::load_pipeline(std::string const& def_file )
+{
+  //+ Needs new search path
+  m_blocks = sprokit::load_pipe_blocks_from_file( def_file );
 }
 
 
@@ -88,18 +116,12 @@ void
 pipeline_builder
 ::add_setting(std::string const& setting)
 {
-  sprokit::config_pipe_block block;
-
-  sprokit::config_value_t value;
-
   size_t const split_pos = setting.find(split_str);
 
   if (split_pos == std::string::npos)
   {
-    std::string const reason = "Error: The setting on the command line "
-                               "\'" + setting + "\' does not contain "
-                               "the \'" + split_str + "\' string which "
-                               "separates the key from the value";
+    std::string const reason = "Error: The setting on the command line \'" + setting + "\' does not contain "
+                               "the \'" + split_str + "\' string which separates the key from the value";
 
     throw std::runtime_error(reason);
   }
@@ -113,23 +135,46 @@ pipeline_builder
 
   if (keys.size() < 2)
   {
-    std::string const reason = "Error: The key portion of setting "
-                               "\'" + setting + "\' does not contain "
-                               "at least two keys in its keypath which is "
-                               "invalid. (e.g. must be at least a:b)";
+    std::string const reason = "Error: The key portion of setting \'" + setting + "\' does not contain "
+                               "at least two keys in its keypath which is invalid. (e.g. must be at least a:b)";
 
     throw std::runtime_error(reason);
   }
 
+  sprokit::config_value_t value;
   value.key_path.push_back(keys.back());
   value.value = setting_value;
 
   keys.pop_back();
 
+  sprokit::config_pipe_block block;
   block.key = keys;
   block.values.push_back(value);
 
   m_blocks.push_back(block);
+}
+
+
+// ------------------------------------------------------------------
+void
+pipeline_builder
+::add_search_path( kwiver::vital::config_path_t const& file_path )
+{
+  m_search_path.push_back( file_path );
+  LOG_DEBUG( m_logger, "Adding \"" << file_path << "\" to search path" );
+}
+
+
+// ------------------------------------------------------------------
+void
+pipeline_builder
+::add_search_path( kwiver::vital::config_path_list_t const& file_path )
+{
+  m_search_path.insert( m_priv->m_search_path.end(),
+                        file_path.begin(), file_path.end() );
+
+  LOG_DEBUG( m_logger, "Adding \"" << kwiver::vital::join( file_path, ", " )
+             << "\" to search path" );
 }
 
 

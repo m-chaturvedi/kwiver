@@ -246,13 +246,14 @@ refine_detections_with_svm
     std::vector<double> descriptor_vector = det->descriptor()->as_double();
 
     size_t descriptor_size = descriptor_vector.size();
-    svm_node *svm_nodes = new svm_node[descriptor_size];
+    svm_node *svm_nodes = new svm_node[descriptor_size + 1];
 
     for( size_t i = 0; i < descriptor_size; ++i )
     {
-      svm_nodes[i].index = i;
+      svm_nodes[i].index = i + 1;
       svm_nodes[i].value = descriptor_vector.at(i);
     }
+    svm_nodes[descriptor_size].index = -1;
 
     typedef std::map<std::string, double> result_map;
     result_map res = d_->apply_svms( svm_nodes );

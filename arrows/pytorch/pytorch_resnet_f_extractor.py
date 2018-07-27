@@ -70,8 +70,14 @@ class pytorch_resnet_f_extractor(object):
         else:
             target_GPU = GPU_list[0]
 
+        if not GPU_list: self.no_GPU_found = True
+
         # load the resnet50 model. Maybe this shouldn't be hardcoded?
-        self._resnet_model = models.resnet50().cuda(device=target_GPU)
+        if self.no_GPU_found:
+            self._resnet_model = models.resnet50()
+        else:
+            self._resnet_model = models.resnet50().cuda(device=target_GPU)
+
         #self._resnet_model.fc = nn.Linear(2048, 46)
         print( resnet_model_path )
         weights = torch.load( resnet_model_path )
@@ -80,8 +86,10 @@ class pytorch_resnet_f_extractor(object):
         self._resnet_model = nn.Sequential(*list(self._resnet_model.children())[:-1])
 
         self._resnet_model.train( False ) # is this the same as eval() ?
-        self._resnet_model.cuda() # move the model to the GPU
- 
+
+        if not self.no_GPU_found:
+            self._resnet_model.cuda() # move the model to the GPU
+
         self._transform = transforms.Compose([
             transforms.Scale(img_size),
             transforms.ToTensor(),
@@ -108,7 +116,10 @@ class pytorch_resnet_f_extractor(object):
         bbox_loader = torch.utils.data.DataLoader(bbox_loader_class, batch_size=self._b_size, shuffle=False, **kwargs)
 
         for idx, imgs in enumerate(bbox_loader):
-            v_imgs = Variable(imgs).cuda() # I removed volitile because of the version update
+            if self.no_GPU_found:
+                v_imgs = Variable(imgs)
+            else:
+                v_imgs = Variable(imgs).cuda() # I removed volitile because of the version update
             output = self._resnet_model(v_imgs)
 
             if idx == 0:

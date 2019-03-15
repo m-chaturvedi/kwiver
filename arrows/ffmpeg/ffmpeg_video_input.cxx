@@ -458,7 +458,7 @@ ffmpeg_video_input
   // Starting with our generated vital::config_block to ensure that assumed values are present
   // An alternative is to check for key presence before performing a get_value() call.
 
-  vital::config_block_sptr config = this->get_configuration();
+ vital::config_block_sptr config = this->get_configuration();
   config->merge_config(in_config);
 }
 

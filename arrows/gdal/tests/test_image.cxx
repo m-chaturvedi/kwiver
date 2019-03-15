@@ -68,6 +68,15 @@ static std::vector< kwiver::vital::vital_metadata_tag > rpc_tags =
   kwiver::vital::VITAL_META_RPC_COL_DEN_COEFF,
 };
 
+static std::vector< kwiver::vital::vital_metadata_tag > nitf_tags =
+{
+  kwiver::vital::VITAL_META_NITF_IDATIM,
+  kwiver::vital::VITAL_META_NITF_BLOCKA_FRFC_LOC_01,
+  kwiver::vital::VITAL_META_NITF_BLOCKA_FRLC_LOC_01,
+  kwiver::vital::VITAL_META_NITF_BLOCKA_LRLC_LOC_01,
+  kwiver::vital::VITAL_META_NITF_BLOCKA_LRFC_LOC_01,
+};
+
 // ----------------------------------------------------------------------------
 int
 main(int argc, char* argv[])
@@ -92,6 +101,22 @@ void test_rpc_metadata(kwiver::vital::metadata_sptr md)
   if (md->size() > 0)
   {
     std::cout << "-----------------------------------\n" << std::endl;
+    kwiver::vital::print_metadata( std::cout, *md );
+  }
+}
+
+// ----------------------------------------------------------------------------
+void test_nitf_metadata(kwiver::vital::metadata_sptr md)
+{
+  kwiver::vital::metadata_traits md_traits;
+  for ( auto const& tag : nitf_tags )
+  {
+    EXPECT_TRUE( md->has( tag ) )
+      << "Image metadata should include " << md_traits.tag_to_name( tag );
+  }
+
+  if (md->size() > 0)
+  {
     kwiver::vital::print_metadata( std::cout, *md );
   }
 }
@@ -178,6 +203,25 @@ TEST_F(image_io, load_nitf)
   auto md = img_ptr->get_metadata();
 
   test_rpc_metadata(md);
+}
+
+TEST_F(image_io, load_nitf_2)
+{
+  kwiver::arrows::gdal::image_io img_io;
+  kwiver::vital::path_t file_path = data_dir + "/" + nitf_file_name;
+
+  auto img_ptr =
+	  img_io.load("/home/chaturvedi/workspace/data/mie4nitf_samples/wpr-j2k/target_001.ntf");
+
+  EXPECT_EQ( img_ptr->width(), 32768);
+  EXPECT_EQ( img_ptr->height(), 32768);
+  EXPECT_EQ( img_ptr->depth(), 1 );
+
+  // Test some pixel values
+  kwiver::vital::image get_image = img_ptr->get_image();
+  kwiver::vital::image_of<uint8_t> img(img_ptr->get_image());
+  auto md = img_ptr->get_metadata();
+  test_nitf_metadata(md);
 }
 
 TEST_F(image_io, load_jpeg)

@@ -139,8 +139,22 @@ CALL( RPC_COL_SCALE ,              "RPC column scale",                double ) \
 CALL( RPC_ROW_NUM_COEFF,           "RPC row numerator coefficients",       std::string ) \
 CALL( RPC_ROW_DEN_COEFF,           "RPC row denominator coefficients",     std::string ) \
 CALL( RPC_COL_NUM_COEFF,           "RPC column numerator coefficients",    std::string ) \
-CALL( RPC_COL_DEN_COEFF,           "RPC column denominator coefficients",  std::string )
-
+CALL( RPC_COL_DEN_COEFF,           "RPC column denominator coefficients",  std::string ) \
+CALL( NITF_IDATIM,                 "NITF IDATIM",                          std::string ) \
+CALL( NITF_BLOCKA_FRFC_LOC_01,     "First Row First Column Location",      std::string ) \
+CALL( NITF_BLOCKA_FRLC_LOC_01,     "First Row Last Column Location",       std::string ) \
+CALL( NITF_BLOCKA_LRLC_LOC_01,     "Last Row Last Column Location",        std::string ) \
+CALL( NITF_BLOCKA_LRFC_LOC_01,     "Last Row First Column Location",       std::string )
+// From STDI-0002-1_4.0 (Table E-9):
+// "The following four fields repeat earth coordinates image corner locations
+// described by IGEOLO in the NITF image subheader, but provide higher
+// precision."
+// Sometimes these may be missing in which case we would have to make do with
+// IGEOLO (?)
+// Latitude and longitude at the first row last column of the image block.
+// Latitude and longitude at the last row last column of the image block.
+// Latitude and longitude at the last row, first column of the image blocks.
+// Latitude and longitude at the first row, first column of the image blocks.
 // ------------------------------------------------------------------
 //
 // Canonical metadata tags
